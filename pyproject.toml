@@ -1,0 +1,31 @@
+[project]
+name = "aim-harder"
+version = "0.1.0"
+description = "Auto-book gym classes at CrossBox El Faro via AimHarder"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.32",
+    "beautifulsoup4>=4.12",
+]
+
+[project.scripts]
+book = "src.book:main"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["src/tests"]
