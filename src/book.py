@@ -17,8 +17,10 @@ def login(session: requests.Session, config: Config) -> None:
     )
     response.raise_for_status()
 
-    if "login" in response.url.lower() or response.status_code != 200:
-        raise RuntimeError("Login failed — check your credentials")
+    # Check for session cookie as proof of successful login
+    if not session.cookies:
+        body = response.text[:200]
+        raise RuntimeError(f"Login failed — no session cookies set. Response: {body}")
 
     print("Logged in successfully")
 

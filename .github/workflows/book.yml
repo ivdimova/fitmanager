@@ -2,10 +2,10 @@ name: Book Gym Class
 
 on:
   schedule:
-    # Sun/Tue/Thu at 21:31 UTC = 22:31 CET (winter, UTC+1)
-    # Books the 9:30 AM CrossFit class for the next day (Mon/Wed/Fri)
-    # NOTE: For summer (CEST, UTC+2), change to: '31 20 * * 0,2,4'
-    - cron: '31 21 * * 0,2,4'
+    # Sun–Thu at 10:30 CET = 09:30 UTC (23h before 9:30 AM class)
+    # Books the 9:30 AM CrossFit class for the next weekday (Mon–Fri)
+    # NOTE: For summer (CEST, UTC+2), change to: '30 8 * * 0-4'
+    - cron: '30 9 * * 0-4'
   workflow_dispatch: # Allow manual trigger for testing
 
 jobs:

@@ -69,22 +69,23 @@ class TestGetTomorrow:
 
 
 class TestLogin:
-    def test_login_raises_on_failure(self, config: Config) -> None:
+    def test_login_raises_on_no_cookies(self, config: Config) -> None:
         session = MagicMock()
+        session.cookies = {}
         response = MagicMock()
         response.status_code = 200
-        response.url = "https://aimharder.com/login"
+        response.text = "Invalid credentials"
         response.raise_for_status = MagicMock()
         session.post.return_value = response
 
         with pytest.raises(RuntimeError, match="Login failed"):
             login(session, config)
 
-    def test_login_succeeds(self, config: Config) -> None:
+    def test_login_succeeds_with_cookies(self, config: Config) -> None:
         session = MagicMock()
+        session.cookies = {"session_id": "abc123"}
         response = MagicMock()
         response.status_code = 200
-        response.url = "https://crossboxelfaro.aimharder.com/dashboard"
         response.raise_for_status = MagicMock()
         session.post.return_value = response
 
