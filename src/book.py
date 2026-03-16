@@ -12,8 +12,7 @@ def login(session: requests.Session, config: Config) -> None:
     """Log in to AimHarder and establish session cookies."""
     response = session.post(
         config.login_url,
-        data={"mail": config.email, "pw": config.password},
-        headers={"Referer": config.base_url},
+        data={"login": "Log in", "mail": config.email, "pw": config.password},
     )
     response.raise_for_status()
 
@@ -82,8 +81,8 @@ def book_class(
 
 
 def get_tomorrow() -> str:
-    """Return tomorrow's date as YYYY-MM-DD."""
-    return (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+    """Return tomorrow's date as YYYYMMDD."""
+    return (datetime.now() + timedelta(days=1)).strftime("%Y%m%d")
 
 
 def main() -> None:

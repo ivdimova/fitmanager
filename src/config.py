@@ -21,7 +21,7 @@ class Config:
 
     @property
     def login_url(self) -> str:
-        return f"{self.base_url}/login"
+        return "https://aimharder.com/login"
 
     @property
     def bookings_url(self) -> str:

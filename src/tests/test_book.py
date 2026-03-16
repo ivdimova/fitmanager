@@ -65,7 +65,7 @@ class TestGetTomorrow:
         mock_dt.now.return_value = datetime(2026, 2, 14, 22, 30)
         mock_dt.side_effect = lambda *a, **kw: datetime(*a, **kw)
         result = get_tomorrow()
-        assert result == "2026-02-15"
+        assert result == "20260215"
 
 
 class TestLogin:
@@ -93,8 +93,7 @@ class TestLogin:
 
         session.post.assert_called_once_with(
             config.login_url,
-            data={"mail": "test@example.com", "pw": "secret"},
-            headers={"Referer": config.base_url},
+            data={"login": "Log in", "mail": "test@example.com", "pw": "secret"},
         )
 
 
@@ -107,7 +106,7 @@ class TestConfig:
 
     def test_urls(self, config: Config) -> None:
         assert config.base_url == "https://crossboxelfaro.aimharder.com"
-        assert config.login_url == "https://crossboxelfaro.aimharder.com/login"
+        assert config.login_url == "https://aimharder.com/login"
         assert config.bookings_url == "https://crossboxelfaro.aimharder.com/api/bookings"
         assert config.book_url == "https://crossboxelfaro.aimharder.com/api/book"
 
