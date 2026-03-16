@@ -107,7 +107,7 @@ class TestConfig:
 
     def test_urls(self, config: Config) -> None:
         assert config.base_url == "https://crossboxelfaro.aimharder.com"
-        assert config.login_url == "https://aimharder.com/login"
+        assert config.login_url == "https://crossboxelfaro.aimharder.com/login"
         assert config.bookings_url == "https://crossboxelfaro.aimharder.com/api/bookings"
         assert config.book_url == "https://crossboxelfaro.aimharder.com/api/book"
 

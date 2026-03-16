@@ -35,7 +35,9 @@ def fetch_classes(
         config.bookings_url,
         params={"day": date, "box": config.box_id},
     )
-    response.raise_for_status()
+    if not response.ok:
+        print(f"Fetch classes failed ({response.status_code}): {response.text[:300]}")
+        response.raise_for_status()
 
     data = response.json()
     if isinstance(data, dict) and "bookings" in data:
