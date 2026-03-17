@@ -16,10 +16,20 @@ def login(session: requests.Session, config: Config) -> None:
     )
     response.raise_for_status()
 
+    print(f"Login status: {response.status_code}")
+    print(f"Login Content-Type: {response.headers.get('Content-Type')}")
+    print(f"Login response (first 500 chars): {response.text[:500]}")
+    print(f"Cookies after login: {dict(session.cookies)}")
+    if hasattr(session.cookies, 'keys'):
+        try:
+            cookie_domains = {c.domain for c in session.cookies}
+            print(f"Cookie domains: {cookie_domains}")
+        except AttributeError:
+            pass
+
     # Check for session cookie as proof of successful login
     if not session.cookies:
-        body = response.text[:200]
-        raise RuntimeError(f"Login failed — no session cookies set. Response: {body}")
+        raise RuntimeError("Login failed — no session cookies set.")
 
     print("Logged in successfully")
 
@@ -30,13 +40,20 @@ def fetch_classes(
     date: str,
 ) -> list[dict]:
     """Fetch available classes for a given date (YYYYMMDD)."""
-    response = session.get(
-        config.bookings_url,
-        params={"day": date, "box": config.box_id},
-    )
+    url = config.bookings_url
+    params = {"day": date, "box": config.box_id}
+    print(f"Fetching classes: GET {url} params={params}")
+    response = session.get(url, params=params)
+
+    print(f"Fetch status: {response.status_code}")
+    print(f"Fetch Content-Type: {response.headers.get('Content-Type')}")
+    print(f"Fetch body (first 500 chars): {response.text[:500]}")
+
     if not response.ok:
-        print(f"Fetch classes failed ({response.status_code}): {response.text[:300]}")
         response.raise_for_status()
+
+    if not response.text.strip():
+        raise RuntimeError("API returned empty response — likely not authenticated.")
 
     data = response.json()
     if isinstance(data, dict) and "bookings" in data:
