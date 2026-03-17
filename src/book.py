@@ -29,7 +29,7 @@ def fetch_classes(
     config: Config,
     date: str,
 ) -> list[dict]:
-    """Fetch available classes for a given date (YYYY-MM-DD)."""
+    """Fetch available classes for a given date (YYYYMMDD)."""
     response = session.get(
         config.bookings_url,
         params={"day": date, "box": config.box_id},
@@ -93,6 +93,10 @@ def main() -> None:
     print(f"Booking {config.class_name} at {config.class_time} on {target_date}")
 
     session = requests.Session()
+    session.headers.update({
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "X-Requested-With": "XMLHttpRequest",
+    })
 
     login(session, config)
 
