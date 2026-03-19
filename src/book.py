@@ -2,10 +2,43 @@
 
 import sys
 from datetime import datetime, timedelta
+from http.cookiejar import Cookie
+from urllib.parse import urlparse
 
 import requests
 
 from src.config import Config, load_config
+
+
+def _copy_cookies_to_subdomain(session: requests.Session, subdomain: str) -> None:
+    """Copy session cookies to the box subdomain so they're sent with API calls."""
+    target_domain = urlparse(subdomain).hostname
+    if not target_domain:
+        return
+
+    for cookie in list(session.cookies):
+        if cookie.domain != target_domain:
+            session.cookies.set_cookie(
+                Cookie(
+                    version=cookie.version,
+                    name=cookie.name,
+                    value=cookie.value,
+                    port=cookie.port,
+                    port_specified=cookie.port_specified,
+                    domain=target_domain,
+                    domain_specified=True,
+                    domain_initial_dot=target_domain.startswith("."),
+                    path=cookie.path,
+                    path_specified=cookie.path_specified,
+                    secure=cookie.secure,
+                    expires=cookie.expires,
+                    discard=cookie.discard,
+                    comment=cookie.comment,
+                    comment_url=cookie.comment_url,
+                    rest=cookie._rest,
+                    rfc2109=cookie.rfc2109,
+                )
+            )
 
 
 def login(session: requests.Session, config: Config) -> None:
@@ -16,21 +49,18 @@ def login(session: requests.Session, config: Config) -> None:
     )
     response.raise_for_status()
 
-    print(f"Login status: {response.status_code}")
-    print(f"Login Content-Type: {response.headers.get('Content-Type')}")
-    print(f"Login response (first 500 chars): {response.text[:500]}")
-    print(f"Cookies after login: {dict(session.cookies)}")
-    if hasattr(session.cookies, 'keys'):
-        try:
-            cookie_domains = {c.domain for c in session.cookies}
-            print(f"Cookie domains: {cookie_domains}")
-        except AttributeError:
-            pass
-
     # Check for session cookie as proof of successful login
     if not session.cookies:
-        raise RuntimeError("Login failed — no session cookies set.")
+        body = response.text[:200]
+        raise RuntimeError(f"Login failed — no session cookies set. Response: {body}")
 
+    # Cookies from aimharder.com may not be sent to crossboxelfaro.aimharder.com
+    # unless explicitly scoped to .aimharder.com — copy them to the subdomain.
+    _copy_cookies_to_subdomain(session, config.base_url)
+
+    print(f"Login status: {response.status_code}")
+    cookie_domains = {c.domain for c in session.cookies}
+    print(f"Cookie domains: {cookie_domains}")
     print("Logged in successfully")
 
 

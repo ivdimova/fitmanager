@@ -3,6 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+import requests
 
 from src.book import find_class, get_tomorrow, login
 from src.config import Config
@@ -70,24 +71,23 @@ class TestGetTomorrow:
 
 class TestLogin:
     def test_login_raises_on_no_cookies(self, config: Config) -> None:
-        session = MagicMock()
-        session.cookies = {}
+        session = requests.Session()
         response = MagicMock()
         response.status_code = 200
         response.text = "Invalid credentials"
         response.raise_for_status = MagicMock()
-        session.post.return_value = response
+        session.post = MagicMock(return_value=response)
 
         with pytest.raises(RuntimeError, match="Login failed"):
             login(session, config)
 
     def test_login_succeeds_with_cookies(self, config: Config) -> None:
-        session = MagicMock()
-        session.cookies = {"session_id": "abc123"}
+        session = requests.Session()
+        session.cookies.set("session_id", "abc123", domain="aimharder.com")
         response = MagicMock()
         response.status_code = 200
         response.raise_for_status = MagicMock()
-        session.post.return_value = response
+        session.post = MagicMock(return_value=response)
 
         login(session, config)  # Should not raise
 
