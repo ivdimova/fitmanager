@@ -14,6 +14,7 @@ class Config:
     box_id: str = "407431"
     class_time: str = "0930"
     class_name: str = "CrossFit"
+    proxy: str = ""
 
     @property
     def base_url(self) -> str:
@@ -49,4 +50,5 @@ def load_config() -> Config:
         box_id=os.environ.get("BOX_ID", "407431"),
         class_time=os.environ.get("CLASS_TIME", "0930"),
         class_name=os.environ.get("CLASS_NAME", "CrossFit"),
+        proxy=os.environ.get("PROXY_URL", ""),
     )

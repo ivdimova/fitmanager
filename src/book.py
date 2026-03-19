@@ -144,6 +144,9 @@ def main() -> None:
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "X-Requested-With": "XMLHttpRequest",
     })
+    if config.proxy:
+        session.proxies = {"https": config.proxy, "http": config.proxy}
+        print(f"Using proxy: yes")
 
     login(session, config)
 
